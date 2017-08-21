@@ -15,6 +15,7 @@
  */
 
 // Linux toolchain requires Foundation to resolve `String` class's `hasSuffix()` function
+// https://bugs.swift.org/browse/SR-5627
 #if os(Linux)
     import Foundation
 #endif
@@ -54,14 +55,12 @@ let disallowedNumericReferences: Set<UInt32> = [
 ]
 
 // Only encode to named character references that end with ;
-// If multiple exists for a given character, i.e., 'AMP;' and 'amp;', pick the one
-// that is shorter and/or all lowercase
+// If multiple named character references exist for a given character, i.e., 'AMP;'
+// and 'amp;', pick the one that is shorter and/or all lowercase
 let namedCharactersEncodeMap = namedCharactersDecodeMap.inverting() {
     existing, new in
     let isExistingLegacy = !existing.hasSuffix(";")
     let isNewLegacy = !new.hasSuffix(";")
-    let existingCount = existing.characters.count
-    let newCount = new.characters.count
 
     if isExistingLegacy && !isNewLegacy {
         // prefer non-legacy
@@ -72,6 +71,9 @@ let namedCharactersEncodeMap = namedCharactersDecodeMap.inverting() {
         // prefer non-legacy
         return existing
     }
+
+    let existingCount = existing.characters.count
+    let newCount = new.characters.count
 
     if existingCount < newCount {
         // if both are same type, prefer shorter name
@@ -102,7 +104,7 @@ let specialNamedCharactersDecodeMap: [String: String] = [
 
 // Range of string lengths of legacy named characters
 // Should be 2...6, but generate statically to avoid hardcoding numbers
-let legacyNamedCharactersLengthRange: CountableClosedRange<Int> = { () -> CountableClosedRange<Int> in
+let legacyNamedCharactersLengthRange = { () -> CountableClosedRange<Int> in
     var min = Int.max, max = Int.min
 
     for (name, _) in legacyNamedCharactersDecodeMap {

@@ -71,7 +71,7 @@ public extension String {
             var str: String = ""
 
             for c in self.characters {
-                let unicodes = String(c).unicodeScalars
+                let unicodes = c.unicodeScalars
 
                 if !encodeEverything,
                     unicodes.count == 1,
@@ -170,13 +170,11 @@ public extension String {
                 }
                 else {
                     // false alarm, not a character reference
-                    // move back to invalid state
-                    state = .Invalid
-
                     // move the consumed & and current unicode to result buffer
                     str += entityPrefix + unicodeAsString
 
-                    // clear entityPrefix buffer
+                    // move back to invalid state
+                    state = .Invalid
                     entityPrefix = ""
                 }
             case .Number:
@@ -192,7 +190,7 @@ public extension String {
                         throw ParseError.MalformedNumericReference(entityPrefix + unicodeAsString)
                     }
 
-                    // move the consume &# to result buffer
+                    // move the consumed &# to result buffer
                     str += entityPrefix
 
                     // move to unknown state
@@ -464,7 +462,7 @@ fileprivate func decode(entity: String, entityPrefix: String, strict: Bool) thro
             let upperIndex = entity.index(entity.startIndex, offsetBy: length)
             let reference = entity[entity.startIndex..<upperIndex]
 
-            if let c = legacyNamedCharactersDecodeMap[reference] {
+            if let c = legacyNamedCharactersDecodeMap[String(reference)] {
                 if strict {
                     // https://www.w3.org/TR/html5/syntax.html#tokenizing-character-references
                     // "[A] character reference is parsed. If the last character matched is not a

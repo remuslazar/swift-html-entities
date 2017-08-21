@@ -32,12 +32,22 @@ let str3Unescaped = "Jako efektivnější se nám jeví pořádání tzv. Road S
 let str3Escaped = "Jako efektivn&ecaron;j&scaron;&iacute; se n&aacute;m jev&iacute; po&rcaron;&aacute;d&aacute;n&iacute; tzv. Road Show prost&rcaron;ednictv&iacute;m na&scaron;ich autorizovan&yacute;ch dealer&uring; v &Ccaron;ech&aacute;ch a na Morav&ecaron;, kter&eacute; prob&ecaron;hnou v pr&uring;b&ecaron;hu z&aacute;&rcaron;&iacute; a &rcaron;&iacute;jna."
 
 class HTMLEntitiesTests: XCTestCase {
+    static var allTests : [(String, (HTMLEntitiesTests) -> () throws -> Void)] = [
+        ("testNamedCharacterReferences", testNamedCharacterReferences),
+        ("testNumericCharacterReferences", testNumericCharacterReferences),
+        ("testEncode", testEncode),
+        ("testDecode", testDecode),
+        ("testInvertibility", testInvertibility),
+        ("testEdgeCases", testEdgeCases),
+        ("testREADMEExamples", testREADMEExamples)
+    ]
+
     func testNamedCharacterReferences() {
-#if os(Linux)
-        XCTAssertEqual(namedCharactersEncodeMap.count, 1367)
-#else
-        XCTAssertEqual(namedCharactersEncodeMap.count, 1509)
-#endif
+        #if os(Linux)
+            XCTAssertEqual(namedCharactersEncodeMap.count, 1367)
+        #else
+            XCTAssertEqual(namedCharactersEncodeMap.count, 1509)
+        #endif
 
         XCTAssertEqual(specialNamedCharactersDecodeMap.count, 2)
         XCTAssertEqual(legacyNamedCharactersDecodeMap.count, 106)
@@ -401,17 +411,5 @@ class HTMLEntitiesTests: XCTestCase {
         }
 
         XCTAssertEqual(try text.htmlUnescape(strict: false), "한")
-    }
-
-    static var allTests : [(String, (HTMLEntitiesTests) -> () throws -> Void)] {
-        return [
-            ("testNamedCharacterReferences", testNamedCharacterReferences),
-            ("testNumericCharacterReferences", testNumericCharacterReferences),
-            ("testEncode", testEncode),
-            ("testDecode", testDecode),
-            ("testInvertibility", testInvertibility),
-            ("testEdgeCases", testEdgeCases),
-            ("testREADMEExamples", testREADMEExamples)
-        ]
     }
 }
